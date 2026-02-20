@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hacker Portfolio</title>
+<style>
+body {
+  margin: 0;
+  background: #050505;
+  color: #00ffcc;
+  font-family: Consolas, monospace;
+  overflow-x: hidden;
+}
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 0;
+}
+.container {
+  position: relative;
+  z-index: 2;
+  padding: 20px;
+  max-width: 1000px;
+  margin: auto;
+}
+.profile {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.profile-box {
+  width: 200px;
+  height: 200px;
+  border: 2px dashed #00ffcc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.info {
+  border: 1px solid #00ffcc;
+  padding: 15px;
+  flex: 1;
+}
+.terminal {
+  margin-top: 30px;
+  border: 1px solid #00ffcc;
+  padding: 15px;
+  height: 220px;
+  overflow-y: auto;
+  background: black;
+}
+input {
+  background: black;
+  border: none;
+  outline: none;
+  color: #00ffcc;
+  width: 90%;
+}
+.progress {
+  margin-top: 20px;
+  border: 1px solid #00ffcc;
+}
+.progress-bar {
+  height: 8px;
+  background: #00ffcc;
+  width: 0%;
+}
+@media(max-width:768px){
+  .profile{flex-direction:column}
+  .profile-box{width:100%}
+}
+</style>
+</head>
+<body>
+<canvas id="matrix"></canvas>
+<div class="container" id="app"></div>
+
+<script>
+const userData = {
+  fullName: "YOUR FULL NAME",
+  nickName: "HackerAlias",
+  role: "Cyber Security Specialist",
+  experience: "5+ Years in Offensive Security",
+  skills: ["Red Teaming","Linux","Malware Analysis","OSINT"],
+  phone: "+00 0000000000",
+  email: "your@email.com"
+};
+
+let locked = true;
+let intrusion = false;
+let binaryCount = 0;
+
+const app = document.getElementById("app");
+
+function renderLock(){
+  app.innerHTML = `
+    <h2>🔐 SECURE ACCESS REQUIRED</h2>
+    <input type="password" id="pass" placeholder="Enter password" />
+  `;
+  document.getElementById("pass").addEventListener("keydown",e=>{
+    if(e.key==="Enter"){
+      if(e.target.value==="root"||e.target.value==="elite"){
+        locked=false;
+        renderMain();
+      } else alert("ACCESS DENIED");
+    }
+  });
+}
+
+function renderMain(){
+  app.innerHTML = `
+    <h1>&lt; ${userData.fullName} /&gt;</h1>
+    <div class="profile">
+      <div class="profile-box">PUBLIC PROFILE</div>
+      <div class="info">
+        <p><strong>Alias:</strong> ${userData.nickName}</p>
+        <p><strong>Experience:</strong> ${userData.experience}</p>
+        <p><strong>Skills:</strong> ${userData.skills.join(", ")}</p>
+      </div>
+    </div>
+    <div class="terminal" id="terminal"></div>
+    <div>$ <input id="cmd" /></div>
+    <div class="progress"><div class="progress-bar" id="bar"></div></div>
+    <div style="margin-top:10px;font-size:12px">BINARY: <span id="binary"></span></div>
+  `;
+
+  const terminal=document.getElementById("terminal");
+  const cmd=document.getElementById("cmd");
+
+  cmd.addEventListener("keydown",e=>{
+    if(e.key==="Enter"){
+      const val=e.target.value.toLowerCase();
+      terminal.innerHTML+=`<div>> ${val}</div>`;
+      if(val==="help") terminal.innerHTML+="<div>about | skills | contact | intrusion | clear</div>";
+      else if(val==="about") terminal.innerHTML+=`<div>${userData.fullName} - ${userData.role}</div>`;
+      else if(val==="skills") terminal.innerHTML+=`<div>${userData.skills.join(" | ")}</div>`;
+      else if(val==="contact") terminal.innerHTML+=`<div>${userData.phone} | ${userData.email}</div>`;
+      else if(val==="intrusion") intrusion=!intrusion;
+      else if(val==="clear") terminal.innerHTML="";
+      else terminal.innerHTML+="<div>Unknown command</div>";
+      terminal.scrollTop=terminal.scrollHeight;
+      e.target.value="";
+    }
+  });
+
+  setInterval(()=>{
+    binaryCount+=Math.floor(Math.random()*50);
+    document.getElementById("binary").innerText=binaryCount.toString(2);
+  },500);
+
+  let prog=0;
+  setInterval(()=>{
+    if(prog<100){prog++;document.getElementById("bar").style.width=prog+"%"}
+  },50);
+}
+
+renderLock();
+
+/* MATRIX EFFECT */
+const canvas=document.getElementById("matrix");
+const ctx=canvas.getContext("2d");
+function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight}
+resize();window.addEventListener("resize",resize);
+
+const letters="01ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const fontSize=14;
+let columns;
+let drops;
+
+function initMatrix(){
+  columns=Math.floor(canvas.width/fontSize);
+  drops=Array(columns).fill(1);
+}
+initMatrix();
+
+function draw(){
+  ctx.fillStyle="rgba(0,0,0,0.08)";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle=intrusion?"#ff0033":"#00ffcc";
+  ctx.font=fontSize+"px monospace";
+  for(let i=0;i<drops.length;i++){
+    const text=letters[Math.floor(Math.random()*letters.length)];
+    ctx.fillText(text,i*fontSize,drops[i]*fontSize);
+    if(drops[i]*fontSize>canvas.height&&Math.random()>0.975)drops[i]=0;
+    drops[i]++;
+  }
+}
+setInterval(draw,30);
+</script>
+</body>
+</html>
