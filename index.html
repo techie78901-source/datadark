@@ -97,20 +97,6 @@ let binaryCount = 0;
 
 const app = document.getElementById("app");
 
-function renderLock(){
-  app.innerHTML = `
-    <h2>🔐 SECURE ACCESS REQUIRED</h2>
-    <input type="password" id="pass" placeholder="Enter password" />
-  `;
-  document.getElementById("pass").addEventListener("keydown",e=>{
-    if(e.key==="Enter"){
-      if(e.target.value==="root"||e.target.value==="elite"){
-        locked=false;
-        renderMain();
-      } else alert("ACCESS DENIED");
-    }
-  });
-}
 
 function renderMain(){
   app.innerHTML = `
@@ -159,7 +145,7 @@ function renderMain(){
   },50);
 }
 
-renderLock();
+renderMain();
 
 /* MATRIX EFFECT */
 const canvas=document.getElementById("matrix");
